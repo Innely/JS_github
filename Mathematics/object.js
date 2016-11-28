@@ -1,25 +1,25 @@
 var Mathematics = {
-    //возведение числа A в степень B
+    // 1. The construction of A to Grade B
     pow: function (a, b) {
       var power = a;
-      for ( var i = 1; i < b; i++) {
+      for (var i = 1; i < b; i++) {
         power = power * a;
       }
       return power;
     },
 
-    //возвращает минимальное число
+    // 2. Return minimum number
     min: function (array) {
-      //проверка на число входящего массива
-      for ( var i = 0; i < array.length; i++) {
+      // Check on the number of entering array
+      for (var i = 0; i < array.length; i++) {
         if (typeof array[i] !== 'number') {
           console.log('ERROR: Not a number');
           return;
         }
       }
 
-      var mini = array [0];
-      for ( var j = 0; j < array.length; j++) {
+      var mini = array[0];
+      for (var j = 0; j < array.length; j++) {
         if (mini > array[j + 1]) {
           mini = array[j + 1];
         }
@@ -28,18 +28,18 @@ var Mathematics = {
 
     },
 
-    //возвращает максимальное число
+    // 3. Return maximum number
     max: function (array) {
-    //проверка на число входящего массива
-      for ( var i = 0; i < array.length; i++) {
+      // Check on the number of entering array
+      for (var i = 0; i < array.length; i++) {
         if (typeof array[i] !== 'number') {
-          console.log('ERROR: Not a number');
+          console.warn('ERROR: Not a number');
           return;
         }
       }
 
-      var maxi = array [0];
-      for ( var j = 0; j < array.length; j++) {
+      var maxi = array[0];
+      for (var j = 0; j < array.length; j++) {
         if (maxi < array[j + 1]) {
           maxi = array[j + 1];
         }
@@ -47,16 +47,16 @@ var Mathematics = {
       return maxi;
     },
 
-    //вычисление факториала числа A
+    // 4. Calculation of the factorial A
     factorial: function (a) {
       var fact = 1;
-      for ( var i = 1; i < a; i++) {
+      for (var i = 1; i < a; i++) {
         fact = fact * (i + 1);
       }
       return fact;
     },
 
-    //константа объекта, возвращает число 3.141592653589793
+    // 5. constant of object
     PI: 3.141592653589793
 };
 
