@@ -56,7 +56,7 @@ var Mathematics = {
       return fact;
     },
 
-    // 5. constant of object
+    // 5. Constant of object
     PI: 3.141592653589793
 };
 
