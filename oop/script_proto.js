@@ -1,30 +1,30 @@
 // Parent class
 function Base() {}
-
+// Getter for Base
 Base.prototype.getId = function() {
   var id;
   return id = Math.floor((Math.random()* 100) + 1);
 };
-
 
 // Class heir to the Base
 function Model(params) {
   Base.apply(this, arguments);
   this.defaults = params;
 }
-
+// Inheritance from Base
 Model.prototype = Object.create(Base.prototype);
 Model.prototype.constructor = Model;
 
+// Setter for Model
 Model.prototype.set = function(property, value) {
   (property in this.defaults) ? '' : console.warn('это новое свойство!');
   this.defaults[property] = value;
 };
-
+// Getter for Model
 Model.prototype.get = function(property) {
   return (property in this.defaults) ? this.defaults[property] : 'false';
 };
-
+// Getter for Model
 Model.prototype.getAll = function() {
   var valueArr = [];
   var value;
@@ -44,10 +44,11 @@ Model.prototype.getAll = function() {
 function ExtendedModel(params) {
   Model.apply(this, arguments);
 }
-
+//Inheritance from Model
 ExtendedModel.prototype = Object.create(Model.prototype);
 ExtendedModel.prototype.constructor = ExtendedModel;
 
+//Getter for ExtendedModel, extended from Model.prototype.getAll
 ExtendedModel.prototype.getAll = function(prop) {
   var valueArr = [];
   var value;
