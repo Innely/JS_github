@@ -44,11 +44,11 @@ Model.prototype.getAll = function() {
 function ExtendedModel(params) {
   Model.apply(this, arguments);
 }
-//Inheritance from Model
+// Inheritance from Model
 ExtendedModel.prototype = Object.create(Model.prototype);
 ExtendedModel.prototype.constructor = ExtendedModel;
 
-//Getter for ExtendedModel, extended from Model.prototype.getAll
+// Getter for ExtendedModel, extended from Model.prototype.getAll
 ExtendedModel.prototype.getAll = function(prop) {
   var valueArr = [];
   var value;
