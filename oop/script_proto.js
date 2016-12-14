@@ -46,19 +46,19 @@ ExtendedModel.prototype.constructor = ExtendedModel;
 
 // Getter for ExtendedModel, extended from Model.prototype.getAll
 ExtendedModel.prototype.getAll = function(prop) {
-  var valueArr = [];
+  var result = [];
 
   function getNestedValues(obj) {
     for (var key in obj) {
       var value = obj[key];
       if ( value.constructor !== Object ) {
-        valueArr.push(value);
+        result.push(value);
       }
       else {
         getNestedValues(value);
       }
     }
-    return valueArr;
+    return result;
   }
 
   if (prop) {
