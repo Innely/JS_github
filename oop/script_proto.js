@@ -2,8 +2,7 @@
 function Base() {}
 // Getter for Base
 Base.prototype.getId = function() {
-  var id;
-  return id = Math.floor((Math.random()* 100) + 1);
+  return Math.floor(Math.random()* 100 + 1);
 };
 
 // Class heir to the Base
@@ -17,7 +16,7 @@ Model.prototype.constructor = Model;
 
 // Setter for Model
 Model.prototype.set = function(property, value) {
-  (property in this.defaults) ? '' : console.warn('это новое свойство!');
+  (property in this.defaults) && console.warn('это новое свойство!');
   this.defaults[property] = value;
 };
 // Getter for Model
@@ -26,18 +25,15 @@ Model.prototype.get = function(property) {
 };
 // Getter for Model
 Model.prototype.getAll = function() {
-  var valueArr = [];
+  var result = [];
   var value;
-  function getNestedValues(obj) {
-    for (var key in obj) {
-      value = obj[key];
-      if ( Array.isArray(value) || typeof value !== 'object' ) {
-        valueArr.push(value);
-      }
+  for (var key in this.defaults) {
+    value = this.defaults[key];
+    if ( value.constructor !== Object ) { // check not an Object
+      result.push(value);
     }
   }
-  getNestedValues(this.defaults);
-  return valueArr;
+  return result;
 };
 
 // Class heir to the Model
@@ -51,33 +47,31 @@ ExtendedModel.prototype.constructor = ExtendedModel;
 // Getter for ExtendedModel, extended from Model.prototype.getAll
 ExtendedModel.prototype.getAll = function(prop) {
   var valueArr = [];
-  var value;
 
   function getNestedValues(obj) {
     for (var key in obj) {
-      value = obj[key];
-      if ( Array.isArray(value) || typeof value !== 'object' ) {
+      var value = obj[key];
+      if ( value.constructor !== Object ) {
         valueArr.push(value);
       }
       else {
         getNestedValues(value);
       }
     }
+    return valueArr;
   }
 
   if (prop) {
     // Only check the first nesting
     if (typeof this.defaults[prop] === 'object') {
-      getNestedValues(this.defaults[prop]);
-      return valueArr;
+      return getNestedValues(this.defaults[prop]);
     }
     else {
       return 'this property is not an object'
     }
   }
   else {
-    getNestedValues(this.defaults);
-    return valueArr;
+    return getNestedValues(this.defaults);
   }
 
 };
