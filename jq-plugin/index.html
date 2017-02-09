@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>
+    Study task | Slider plugin
+  </title>
+  <meta content="" name='description'/>
+  <meta content="" name='keywords'/>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+
+  <link href="css/application.css" rel="stylesheet"/>
+
+  <script src="js/jquery-3.1.1.min.js"></script>
+  <script src="js/slider.js"></script>
+
+</head>
+<body>
+
+  <div class="container">
+    <div class="container_row">
+
+      <!-- First slider -->
+      <div id="slider" class="slider slider_first">
+        <div class="slider_viewport">
+          <div class="slider_list">
+            <div class="slider_item"><img src="assets/mountain_1_sm.jpg"></div>
+            <div class="slider_item"><img src="assets/mountain_2_sm.jpg"></div>
+            <div class="slider_item"><img src="assets/mountain_3_sm.jpg"></div>
+            <div class="slider_item"><img src="assets/mountain_4_sm.jpg"></div>
+          </div>
+        </div>
+        <div class="slider_nav">
+          <div class="slider_arrow slider_arrow__left"></div>
+          <div class="slider_arrow slider_arrow__right"></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="container_row">
+      
+      <!-- Second slider. Carousel -->
+      <div id="carousel" class="slider slider_second">
+        <div class="slider_viewport">
+          <div class="slider_list">
+            <div class="slider_item"><img src="assets/mountain_1_sm.jpg"></div>
+            <div class="slider_item"><img src="assets/mountain_2_sm.jpg"></div>
+            <div class="slider_item"><img src="assets/mountain_3_sm.jpg"></div>
+            <div class="slider_item"><img src="assets/mountain_4_sm.jpg"></div>
+            <div class="slider_item"><img src="assets/mountain_3_sm.jpg"></div>
+            <div class="slider_item"><img src="assets/mountain_2_sm.jpg"></div>
+          </div>
+        </div>
+        <div class="slider_nav">
+          <div class="slider_arrow slider_arrow__left"></div>
+          <div class="slider_arrow slider_arrow__right"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    var $slider = $('#slider').slider();
+    var $carousel = $('#carousel').slider({
+      interval: 1000,
+      items: 2,
+      loop: true,
+      callback: function(number) {
+        console.log('Current carousel slide - ' + number);
+      }
+    });
+    
+    console.log('Total number of slides - ' + $slider.getSlidesCount());
+  </script>
+
+</body>
+</html>
