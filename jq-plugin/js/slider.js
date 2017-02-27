@@ -8,227 +8,185 @@
 
   $.slider = function(container, options) {
 
-    var defaults  = $.extend( {
+    var options  = $.extend( {
       interval: 3000,
       items: 1,
       loop: false,
       callback: function() {}
     }, options);
 
-    this.$container = $(container);
-    var self = this;
+    var $dotItems;
+    var photosMargin;
+    var photosIndex = 0;
+    var photosCurrent = 0;
     var timeoutSlider = null;
 
-    var $sliderItem = this.$container.find(".slider_item");
-    var $sliderList = this.$container.find(".slider_list");
-    var $sliderViewport = this.$container.find(".slider_viewport");
-    var $arrowLeft = this.$container.find(".slider_arrow__left");
-    var $arrowRight = this.$container.find(".slider_arrow__right");
+    var $sliderItem = $(container).find(".slider_item");
+    var $sliderList = $(container).find(".slider_list");
+    var $sliderViewport = $(container).find(".slider_viewport");
+    var $arrowLeft = $(container).find(".slider_arrow__left");
+    var $arrowRight = $(container).find(".slider_arrow__right");
 
-    var itemWidth = $sliderItem.width(); // Slide width
+    var itemWidth = $(container).width()/options.items; // Slide middle width
     var itemCount = $sliderItem.length; // Sliders amount
-
-    var itemsWidth = itemWidth * itemCount; // Slider-list width
-    var viewportWidth = itemWidth * defaults.items;  // Viewport width
+    var viewportWidth = itemWidth * options.items;  // Viewport width
     var dotsCount = itemWidth * itemCount/viewportWidth; // Dots amount
 
     $sliderViewport.css('width', viewportWidth); // Set css width for viewport
-    $sliderList.css('width', itemsWidth); // Set css width for slider-list
+    $sliderList.css('width', itemWidth * itemCount); // Set css width for slider-list
+    $sliderItem.css('width', itemWidth);
 
+    /** privat method initialize */
+    var initialize = function() {
+      /** Paint dots DOM */
+      $dotItems = $('<div/>', {
+        class: 'slider_control-nav',
+      })
+      for (var i = 0; i < dotsCount; i++){
+        $dotItems.append($('<div class="slider_control-nav-item"/>'));
+      }
+      $(container).append($dotItems);
 
-    /** Paint dots DOM */
-    var $dotItems = $('<div/>', {
-      class: 'slider_control-nav',
-    })
-    for (var i = 0; i < dotsCount; i++){
-      var $dotItem = $('<div class="slider_control-nav-item"/>');
-      $dotItems.append($dotItem);
-    }
-    this.$container.append($dotItems);
-
-
-    /** method _initialize */
-    function _initialize() {
       // For slider with loop
-      if (defaults.loop && (dotsCount > 2)) {
-        // Копия последних слайдов помещается в перед чтоб первый слайд был на втором месте, без пустот по бокам
-        $sliderList.children().slice(-defaults.items).clone().prependTo($sliderList);
-        $sliderList.children().slice(-defaults.items).remove();
-        $sliderList.css('margin-left', -viewportWidth);
+      if (options.loop) {
+        // Копия первых и последних слайдов помещается назад и вперед для эффекта красивой анимации
+        $sliderList.children().slice(-options.items).clone().prependTo($sliderList)
+        $sliderList.children().slice(options.items, 2 * options.items).clone().appendTo($sliderList);
+
+        $sliderList.css('width', itemWidth * (itemCount + 2*options.items)); // Set css width for slider-list
       }
 
-      self.dotMove(self.dotCurrent);
-      self.photosMove(self.photosCurrent);
+      photosMove(photosCurrent);
+      setEvents();
 
-      _setEvents();
+      // Turn On auto-slideshow of the slider
+      //startSlideShow();
 
-      return self;
-    }
+    }.bind(this);
 
-    /** method _setEvents */
-    function _setEvents() {
-      $arrowLeft.click(function(){
-        self.dotMove(--dotIndex);
-        self.photosMove(--photosIndex);
+    /** privat method setEvents */
+    var setEvents = function() {
+      $arrowLeft.on('click', function(){
+        clearTimeout(timeoutSlider);
+        photosMove(--photosIndex);
 
-        return false;
+        //startSlideShow();
       });
 
-      $arrowRight.click(function() {
-        self.dotMove(++dotIndex);
-        self.photosMove(++photosIndex);
+      $arrowRight.on('click', function(){
+        clearTimeout(timeoutSlider);
+        photosMove(++photosIndex);
 
-        return false;
+        //startSlideShow();
       });
 
       $dotItems.on('click', '.slider_control-nav-item', function(){
-        self.dotMove($(this).index());
-        self.photosMove($(this).index());
+        clearTimeout(timeoutSlider);
+        photosMove($(this).index());
 
-        return false;
+        //startSlideShow();
       });
-    }
+    }.bind(this);
 
     /** Auto-move photos of the slider in loop. */
-    this.startSlideShow = function() {
-        clearTimeout(timeoutSlider);
+    var startSlideShow = function() {
 
-        timeoutSlider = setTimeout(function(){
-        self.dotMove(++dotIndex);
-        self.photosMove(++photosIndex);
-      }, defaults.interval);
+      timeoutSlider = setInterval(function(){
+        photosMove(++photosIndex);
+      }, options.interval);
 
-      return self;
-    };
+    }.bind(this);
 
     /**
      * Move photos of the slider.
      * *@param {Number}  [index] The step of photos-view to move to.
      */
-    var photosIndex = 0;
-    var photosMargin;
-    var photosIndexPrevious = 0;
-    this.photosCurrent = 0;
-    this.photosMove = function(index) {
-      photosIndex = isNaN(index) ? self.photosCurrent : index;
+    var photosMove = function(index) {
+      photosIndex = isNaN(index) ? photosCurrent : index;
       // Номер текущего слайда кратно количеству dots
-      self.photosCurrent = photosIndex % dotsCount;
+      photosCurrent = photosIndex % dotsCount;
 
       // For slider without loop
-      if (!defaults.loop){
+      if (!options.loop){
         if(photosIndex < 0) {
-          self.photosCurrent = photosIndex = 0;
+          photosCurrent = photosIndex = 0;
         }
 
         if(photosIndex >= dotsCount) {
-          self.photosCurrent = photosIndex = dotsCount - 1;
+          photosCurrent = photosIndex = dotsCount - 1;
         }
 
         photosMargin = -viewportWidth * photosIndex;
-        $sliderList.animate({marginLeft:photosMargin},500);
+        $sliderList.css({
+          'transform':'translate(' + photosMargin + 'px)',
+          'transition': 'transform .5s'
+        });
       }
 
       // For slider with loop
-      if (defaults.loop && (dotsCount > 2)) {
-          photosMargin = -viewportWidth;
+      if (options.loop) {
+          photosMargin = -viewportWidth * (photosIndex + 1);
 
-        // Go to the next slide
-        if(photosIndexPrevious < photosIndex) {
-          $sliderList.animate({marginLeft: 2*photosMargin},500);
-
-          setTimeout(function() {
-            // Копия первых слайдов помещается в конец.
-            $sliderList.children().slice(0, defaults.items).clone().appendTo($sliderList);
-            $sliderList.children().slice(0, defaults.items).remove();
-            $sliderList.css('margin-left', photosMargin);
-          }, 600);
-        }
-        // Go to the previous slide
-        else if (photosIndexPrevious > photosIndex) {
-          $sliderList.animate({marginLeft: 0},500);
-
-          setTimeout(function() {
-            // Копия последних слайдов помещается в перед.
-            $sliderList.children().slice(-defaults.items).clone().prependTo($sliderList);
-            $sliderList.children().slice(-defaults.items).remove();
-            $sliderList.css('margin-left', photosMargin);
-          }, 600);
-        }
-
-        // Remember number of revious slide
-        photosIndexPrevious = photosIndex;
-      }
-      else {
+        // Go from first to the previous slide
         if(photosIndex < 0) {
-          self.photosCurrent = photosIndex = dotsCount - 1;
+          $sliderList.css({
+            'transform':'translate(0px)',
+            'transition': 'transform .5s'
+          });
+          setTimeout(function() {
+            $sliderList.css({
+              'transform': 'translate(' + (-viewportWidth) * dotsCount + 'px)',
+              'transition': 'none'
+            });
+          }, 500);
+          photosCurrent = photosIndex = dotsCount - 1;
         }
-
-        if(photosIndex >= dotsCount) {
-          self.photosCurrent = photosIndex = 0;
+        // Go from last to the next slide
+        else if(photosIndex == dotsCount) {
+          $sliderList.css({
+            'transform':'translate(' + photosMargin + 'px)',
+            'transition': 'transform .5s'
+          });
+          setTimeout(function() {
+            $sliderList.css({
+              'transform': 'translate(' + (-viewportWidth) + 'px)',
+              'transition': 'none'
+            });
+          }, 500);
+          photosCurrent = photosIndex = 0;
         }
-
-        photosMargin = -viewportWidth * photosIndex;
-        $sliderList.animate({marginLeft:photosMargin},500);
-      }
-
-
-      // Function callback from slider settings
-      defaults.callback(self.photosCurrent);
-
-      // Turn On auto-slideshow of the slider
-      self.startSlideShow();
-
-      // Only for slider without loop
-      if (!defaults.loop){
-        _setButtons();
-      }
-
-      return self;
-    };
-
-    /**
-     * Move to a specific dot.
-     * @param {Number}  [index] The dot to move to.
-     */
-    var dotIndex = 0;
-    this.dotCurrent = 0;
-    this.dotMove = function(index) {
-
-      dotIndex = isNaN(index) ? self.dotCurrent : index;
-      self.dotCurrent = dotIndex % dotsCount;
-
-      // For slider without loop
-      if (!defaults.loop){
-        if(dotIndex < 0) {
-          self.dotCurrent = dotIndex = 0;
+        else if(photosIndex == 0) {
+          $sliderList.css({
+            'transform':'translate(' + (-viewportWidth) + 'px)'
+          });
         }
-
-        if(dotIndex >= dotsCount) {
-          self.dotCurrent = dotIndex = dotsCount - 1;
-        }
-      }
-      // For slider with loop
-      else {
-        if(dotIndex < 0) {
-          self.dotCurrent = dotIndex = dotsCount - 1;
-        }
-
-        if(dotIndex > dotsCount) {
-          self.dotCurrent = dotIndex = 1;
+        else {
+          $sliderList.css({
+            'transform':'translate(' + photosMargin + 'px)',
+            'transition': 'transform .5s'
+          });
         }
       }
 
+      // Move to a specific dot.
       $dotItems.children().removeClass("is-active");
       var $dots = $dotItems.children();
-      $($dots[self.dotCurrent]).addClass("is-active");
+      $($dots[photosCurrent]).addClass("is-active");
 
-      return self;
-    };
+      // Only for slider without loop
+      if (!options.loop){
+        setButtons();
+      }
 
-    /** method _setButtons for disabling arrows */
-    function _setButtons() {
-      $arrowLeft.toggleClass("is-disabled", self.dotCurrent <= 0);
-      $arrowRight.toggleClass("is-disabled", self.dotCurrent > (dotsCount - 2));
+      // Function callback from slider settings
+      options.callback(photosCurrent);
+
+    }.bind(this);
+
+    /** privat method setButtons for disabling arrows */
+    function setButtons() {
+      $arrowLeft.toggleClass("is-disabled", photosCurrent <= 0);
+      $arrowRight.toggleClass("is-disabled", photosCurrent > (dotsCount - 2));
     }
 
     /**  Return amount of photo-slides */
@@ -236,8 +194,7 @@
       return itemCount;
     };
 
-    return _initialize();
-
+    return initialize();
   }
 
   $.fn.slider = function(options) {
