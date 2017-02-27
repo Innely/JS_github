@@ -60,7 +60,7 @@
       setEvents();
 
       // Turn On auto-slideshow of the slider
-      //startSlideShow();
+      startSlideShow();
 
     }.bind(this);
 
@@ -70,21 +70,21 @@
         clearTimeout(timeoutSlider);
         photosMove(--photosIndex);
 
-        //startSlideShow();
+        startSlideShow();
       });
 
       $arrowRight.on('click', function(){
         clearTimeout(timeoutSlider);
         photosMove(++photosIndex);
 
-        //startSlideShow();
+        startSlideShow();
       });
 
       $dotItems.on('click', '.slider_control-nav-item', function(){
         clearTimeout(timeoutSlider);
         photosMove($(this).index());
 
-        //startSlideShow();
+        startSlideShow();
       });
     }.bind(this);
 
