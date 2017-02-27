@@ -48,6 +48,7 @@ body {
 .slider_viewport {
   position: relative;
   overflow: hidden;
+  max-width: 980px;
 }
 
 .slider_list {
@@ -58,9 +59,13 @@ body {
   float: left;
 }
 
+.is-static {
+  transition: none !important;
+}
+
 .slider_item img {
   display: block;
-  max-width: 100%;
+  width: 100%;
   height: auto;
 }
 
