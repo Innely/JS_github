@@ -22,6 +22,8 @@
     var photosCurrent = 0;
     var timeoutSlider = null;
     var animation_speed = 500;
+    var animation_speed_for_fix;
+    animation_speed_for_fix = animation_speed + 100;
     var dotsCount;
 
     var $sliderItem = $(container).find(".slider_item");
@@ -190,9 +192,9 @@
           }, animation_speed);
           setTimeout(function() {
             $sliderList.css({
-              transition: 'transform ' + 600 + 'ms'
+              transition: 'transform ' + animation_speed_for_fix + 'ms'
             });
-          }, 600);
+          }, animation_speed_for_fix);
           photosCurrent = photosIndex = dotsCount - 1;
         }
 
