@@ -1,5 +1,6 @@
 /**
- * Slider
+ * My Slider
+ * @author  Lazarenko Inna, 2017
  */
 
 (function($) {
@@ -20,6 +21,8 @@
     var photosIndex = 0;
     var photosCurrent = 0;
     var timeoutSlider = null;
+    var animation_speed = 500;
+    var dotsCount;
 
     var $sliderItem = $(container).find(".slider_item");
     var $sliderList = $(container).find(".slider_list");
@@ -30,18 +33,26 @@
     var itemWidth = $(container).width()/options.items; // Slide middle width
     var itemCount = $sliderItem.length; // Sliders amount
     var viewportWidth = itemWidth * options.items;  // Viewport width
-    var dotsCount = itemWidth * itemCount/viewportWidth; // Dots amount
+     // Dots amount
+    if (options.items > 1){
+      dotsCount = Math.ceil(itemCount/options.items);
+    }
+    else {
+      dotsCount = itemCount/options.items;
+    }
 
-    $sliderViewport.css('width', viewportWidth); // Set css width for viewport
+    //$sliderViewport.css('width', viewportWidth); // Set css width for viewport
     $sliderList.css('width', itemWidth * itemCount); // Set css width for slider-list
     $sliderItem.css('width', itemWidth);
 
-    /** privat method initialize */
+    /**
+     * @privat_method
+     * initialize
+     */
     var initialize = function() {
-      /** Paint dots DOM */
-      $dotItems = $('<div/>', {
-        class: 'slider_control-nav',
-      })
+      // Paint dots DOM
+      $dotItems = $('<div class="slider_control-nav"/>');
+
       for (var i = 0; i < dotsCount; i++){
         $dotItems.append($('<div class="slider_control-nav-item"/>'));
       }
@@ -49,7 +60,7 @@
 
       // For slider with loop
       if (options.loop) {
-        // Копия первых и последних слайдов помещается назад и вперед для эффекта красивой анимации
+        // Copy the first and last slide is placed backward and forward for a beautiful animation effect
         $sliderList.children().slice(-options.items).clone().prependTo($sliderList)
         $sliderList.children().slice(options.items, 2 * options.items).clone().appendTo($sliderList);
 
@@ -60,36 +71,42 @@
       setEvents();
 
       // Turn On auto-slideshow of the slider
-      startSlideShow();
+      startLoopInterval();
 
     }.bind(this);
 
-    /** privat method setEvents */
+
+    /**
+     * @privat_method setEvents
+     */
     var setEvents = function() {
       $arrowLeft.on('click', function(){
         clearTimeout(timeoutSlider);
         photosMove(--photosIndex);
 
-        startSlideShow();
+        startLoopInterval();
       });
 
       $arrowRight.on('click', function(){
         clearTimeout(timeoutSlider);
         photosMove(++photosIndex);
 
-        startSlideShow();
+        startLoopInterval();
       });
 
       $dotItems.on('click', '.slider_control-nav-item', function(){
         clearTimeout(timeoutSlider);
         photosMove($(this).index());
 
-        startSlideShow();
+        startLoopInterval();
       });
-    }.bind(this);
+    };
 
-    /** Auto-move photos of the slider in loop. */
-    var startSlideShow = function() {
+    /**
+     * Auto-move photos of the slider in loop.
+     * @privat_method startLoopInterval
+    */
+    var startLoopInterval = function() {
 
       timeoutSlider = setInterval(function(){
         photosMove(++photosIndex);
@@ -99,11 +116,11 @@
 
     /**
      * Move photos of the slider.
-     * *@param {Number}  [index] The step of photos-view to move to.
+     * @param {Number}  [index] The step of photos-view to move to.
      */
     var photosMove = function(index) {
       photosIndex = isNaN(index) ? photosCurrent : index;
-      // Номер текущего слайда кратно количеству dots
+      // Number of the current slide is a multiple of the number of dots
       photosCurrent = photosIndex % dotsCount;
 
       // For slider without loop
@@ -118,60 +135,111 @@
 
         photosMargin = -viewportWidth * photosIndex;
         $sliderList.css({
-          'transform':'translate(' + photosMargin + 'px)',
-          'transition': 'transform .5s'
+          transform:'translate(' + photosMargin + 'px)',
+          transition: 'transform ' + animation_speed + 'ms'
         });
       }
 
       // For slider with loop
       if (options.loop) {
-          photosMargin = -viewportWidth * (photosIndex + 1);
+        photosMargin = -viewportWidth * (photosIndex + 1);
 
-        // Go from first to the previous slide
-        if(photosIndex < 0) {
+       // Go from first to the last slide
+        if(photosIndex < 0 && itemCount%options.items == 0) {
           $sliderList.css({
-            'transform':'translate(0px)',
-            'transition': 'transform .5s'
+            transform:'translate(0px)',
+            transition: 'transform ' + animation_speed + 'ms'
           });
           setTimeout(function() {
             $sliderList.css({
-              'transform': 'translate(' + (-viewportWidth) * dotsCount + 'px)',
-              'transition': 'none'
+              transform: 'translate(' + (-viewportWidth) * dotsCount + 'px)',
+              transition: 'none'
             });
-          }, 500);
+          }, animation_speed);
           photosCurrent = photosIndex = dotsCount - 1;
         }
         // Go from last to the next slide
-        else if(photosIndex == dotsCount) {
+        else if(photosIndex === dotsCount && itemCount%options.items == 0) {
           $sliderList.css({
-            'transform':'translate(' + photosMargin + 'px)',
-            'transition': 'transform .5s'
+            transform:'translate(' + photosMargin + 'px)',
+            transition: 'transform ' + animation_speed + 'ms'
           });
           setTimeout(function() {
             $sliderList.css({
-              'transform': 'translate(' + (-viewportWidth) + 'px)',
-              'transition': 'none'
+              transform: 'translate(' + (-viewportWidth) + 'px)',
+              transition: 'none'
             });
-          }, 500);
+          }, animation_speed);
           photosCurrent = photosIndex = 0;
         }
+
+        /*
+         *For uneven number of slides to options.items ------------------------
+         */
+        // Go from first to the last slide
+        else if(photosIndex < 0 && itemCount%options.items > 0) {
+          $sliderList.css({
+            transform:'translate(0px)',
+            transition: 'transform ' + animation_speed + 'ms'
+          });
+          setTimeout(function() {
+            $sliderList.css({
+              transform: 'translate(' + (-itemCount*itemWidth) + 'px)',
+              transition: 'none'
+            });
+          }, animation_speed);
+          setTimeout(function() {
+            $sliderList.css({
+              transition: 'transform ' + 600 + 'ms'
+            });
+          }, 600);
+          photosCurrent = photosIndex = dotsCount - 1;
+        }
+
+        // Go from previous to the next slide
+        else if(photosIndex === (dotsCount - 1) && itemCount%options.items > 0) {
+          $sliderList.css({
+            transform:'translate(' + (-itemCount*itemWidth) + 'px)',
+            transition: 'transform ' + animation_speed + 'ms'
+          });
+        }
+
+        // Go from last to the next slide
+        else if(photosIndex === dotsCount && itemCount%options.items > 0) {
+          $sliderList.css({
+            transform:'translate(' + (-itemCount*itemWidth - viewportWidth) + 'px)',
+            transition: 'transform ' + animation_speed + 'ms'
+          });
+          setTimeout(function() {
+            $sliderList.css({
+              transform: 'translate(' + (-viewportWidth) + 'px)',
+              transition: 'none'
+            });
+          }, animation_speed);
+          photosCurrent = photosIndex = 0;
+        }
+        /*
+         * End: For uneven number of slides-----------------------
+         */
+
         else if(photosIndex == 0) {
           $sliderList.css({
-            'transform':'translate(' + (-viewportWidth) + 'px)'
+            transform:'translate(' + (-viewportWidth) + 'px)'
           });
         }
         else {
           $sliderList.css({
-            'transform':'translate(' + photosMargin + 'px)',
-            'transition': 'transform .5s'
+            transform:'translate(' + photosMargin + 'px)',
+            transition: 'transform ' + animation_speed + 'ms'
           });
         }
+
       }
 
       // Move to a specific dot.
       $dotItems.children().removeClass("is-active");
       var $dots = $dotItems.children();
-      $($dots[photosCurrent]).addClass("is-active");
+      $dots.eq(photosCurrent).addClass("is-active");
 
       // Only for slider without loop
       if (!options.loop){
@@ -183,13 +251,16 @@
 
     }.bind(this);
 
-    /** privat method setButtons for disabling arrows */
+    /**
+     * @privat_method setButtons
+     * for disabling arrows
+     */
     function setButtons() {
       $arrowLeft.toggleClass("is-disabled", photosCurrent <= 0);
       $arrowRight.toggleClass("is-disabled", photosCurrent > (dotsCount - 2));
     }
 
-    /**  Return amount of photo-slides */
+    // Return amount of photo-slides
     this.getSlidesCount = function() {
       return itemCount;
     };
