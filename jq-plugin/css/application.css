@@ -42,13 +42,12 @@ body {
 }
 
 .slider_second {
-
+  width: 460px;
 }
 
 .slider_viewport {
   position: relative;
   overflow: hidden;
-  max-width: 980px;
 }
 
 .slider_list {
