@@ -47,9 +47,10 @@
     $sliderList.css('width', itemWidth * itemCount); // Set css width for slider-list
     $sliderItem.css('width', itemWidth);
 
+
     /**
-     * @privat_method
      * initialize
+     * @private
      */
     var initialize = function() {
       // Paint dots DOM
@@ -79,7 +80,8 @@
 
 
     /**
-     * @privat_method setEvents
+     * setEvents
+     * @private
      */
     var setEvents = function() {
       $arrowLeft.on('click', function(){
@@ -106,7 +108,7 @@
 
     /**
      * Auto-move photos of the slider in loop.
-     * @privat_method startLoopInterval
+     * @private
     */
     var startLoopInterval = function() {
 
@@ -119,6 +121,7 @@
     /**
      * Move photos of the slider.
      * @param {Number}  [index] The step of photos-view to move to.
+     * @private
      */
     var photosMove = function(index) {
       photosIndex = isNaN(index) ? photosCurrent : index;
@@ -254,8 +257,8 @@
     }.bind(this);
 
     /**
-     * @privat_method setButtons
      * for disabling arrows
+     * @private
      */
     function setButtons() {
       $arrowLeft.toggleClass("is-disabled", photosCurrent <= 0);
