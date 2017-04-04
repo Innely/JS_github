@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>
+    Backbone app
+  </title>
+  <meta content="" name='description'/>
+  <meta content="" name='keywords'/>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+
+  <link href="css/application.css" rel="stylesheet"/>
+
+  <script src="lib/jquery-min.js"></script>
+  <script src="lib/lodash-min.js"></script>
+  <script src="lib/backbone-min.js"></script>
+
+  <script src="lib/jade-runtime.js"></script>
+  <script src="lib/jade-tpl.js"></script>
+
+  <script src="lib/RegionLayout.js"></script>
+
+</head>
+<body>
+
+  <main role="main" id="app"></main>
+
+  <!-- JADE (PUG) compiled templates -->
+  <script src="build/App.jade.js"></script>
+  <script src="build/Controls.jade.js"></script>
+
+  <!-- Backbone views, models, controllers and collections -->
+  <script src="js/CellModel.js"></script>
+  <script src="js/CellView.js"></script>
+
+  <script src="js/CellsView.js"></script>
+  <script src="js/CellsCollection.js"></script>
+
+  <script src="js/ControlsView.js"></script>
+
+  <script src="js/AppView.js"></script>
+  <script src="js/AppModel.js"></script>
+  <script src="js/App.js"></script>
+</body>
+</html>

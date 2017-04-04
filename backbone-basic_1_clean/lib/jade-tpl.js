@@ -1,0 +1,1 @@
+(function(a){this.tpl={render:function(b,c){var d="",e=window.JST&&window.JST[b];return c=c||{},"string"==typeof b&&e&&(c=_.extend(c,{_t:a.t,_formatTime:a.formatTime}),d=e(c)),d}}}).call(this,jQuery);
