@@ -1,31 +1,42 @@
 /**
- * Base application view
+ * @class AppView
+ * @classdesc Base application view
+ * @see Backbone.View
  */
 
 var AppView = Backbone.View.extend({
 
+    /**
+     * @see Region
+     */
     regions: {
         field: '#field',
         controls: '#controls'
     },
 
-    initialize: function() {
-
-    },
-
+    /**
+     * Render application
+     * @return {AppView}
+     */
     render: function() {
         this.$el.html(tpl.render('App'));
 
+        /**
+         * Render field
+         */
         this.regions.field.renderWidgets(
-            this.model.collection,
+            this.model.field,
             CellView,
             function(model) {
                 return {model: model};
             }
         );
-        console.log(this.model.collection);
+        console.log(this.model.field);
 
-        this.regions.controls.render(ControlsView, {});
+        /**
+         * Render controls
+         */
+        this.regions.controls.render(ControlsView);
 
         return this;
     }

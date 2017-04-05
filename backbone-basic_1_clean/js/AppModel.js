@@ -1,5 +1,7 @@
 /**
- * Base application model
+ * @class AppModel
+ * @classdesc Base application model
+ * @see Backbone.Model
  */
 
 var AppModel = Backbone.Model.extend({
@@ -11,14 +13,24 @@ var AppModel = Backbone.Model.extend({
         openedCount: 0
     },
 
+    /**
+     * @see Backbone.Model.initialize
+     */
     initialize: function() {
-        this.collection = new CellsCollection();
+        this.field = new CellsCollection();
         this.fillCellsCollection();
     },
 
+
+    /**
+     * Fill cells collection method
+     * @public
+     */
     fillCellsCollection: function() {
-  
-        this.collection.add([
+        // Magic code where we define have mine, etc.
+        //this.collection.add(new AppFieldModel({ }));
+
+        this.field.add([
             {x: 0, y: 0, isMine: false, minesAround: 0},
             {x: 1, y: 0, isMine: false, minesAround: 1},
             {x: 2, y: 0, isMine: true, minesAround: 0},

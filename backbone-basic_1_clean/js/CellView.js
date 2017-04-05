@@ -1,26 +1,22 @@
 /**
  * @class CellView
+ * @classdesc View for one cell of the field
+ * @see Backbone.View
  */
 
 var CellView = Backbone.View.extend({
 
+    CSS_MINE_CLASS: 'is-mine',
+
     className: 'cell',
 
+    /**
+     * Render the cell of the field
+     * @return {CellView}
+     */
     render: function () {
-
-        if (this.model.get('minesAround')){
-            this.$el.html(this.model.get('minesAround'));
-        }
-        else {
-            this.$el.html('-1');
-        }
-
-        if (this.model.get('isMine')){
-            this.$el.addClass('is-mine');
-        }
-
-        this.$el.attr("data-x", this.model.get('x'));
-        this.$el.attr("data-y", this.model.get('y'));
+        this.$el.html(this.model.get('minesAround') || '');
+        this.$el.toggleClass(this.CSS_MINE_CLASS, this.model.get('isMine'));
 
         return this;
     }
