@@ -20,7 +20,7 @@ var CellView = Backbone.View.extend({
      * @see Backbone.Events
      */
     events: {
-        'click': 'openCell'
+        'click': 'onClick'
     },
 
     /**
@@ -28,7 +28,7 @@ var CellView = Backbone.View.extend({
      * @see Backbone.View.initialize
      */
     initialize: function() {
-        this.listenTo(this.model, 'change:isOpen', this.openAllCells);
+        this.listenTo(this.model, 'change:isOpen', this.onOpenChange);
     },
 
     /**
@@ -46,14 +46,10 @@ var CellView = Backbone.View.extend({
      * Open cell, add class for open cell
      * @protected
      */
-    openCell: function () {
-        if (!this.model.get('notToClick')) {
-            this.model.set({'isOpen': true});
+    onClick: function () {
+        if (!this.model.get('isGameFail')) {
+            this.model.set('isOpen', true);
             this.$el.toggleClass(this.CSS_OPEN_CLASS, this.model.get('isOpen'));
-
-            if (this.model.get('isMine')) {
-                setTimeout("alert('Вы проиграли...')", 50);
-            }
         }
     },
 
@@ -61,7 +57,7 @@ var CellView = Backbone.View.extend({
      * Open cells for happy end (all cells)
      * @protected
      */
-    openAllCells: function () {
+    onOpenChange: function () {
         this.$el.toggleClass(this.CSS_OPEN_CLASS, this.model.get('isOpen'));
     }
 

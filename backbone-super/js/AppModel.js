@@ -6,18 +6,23 @@
 
 var AppModel = Backbone.Model.extend({
 
-	defaults: {
+    defaults: {
         width: 5,
         height: 5,
         mines: 8,
-        openedCount: 0
+        openedCount: 0,
+        isGameFailModel: false,
+        resetGameCounter: 0
     },
 
     /**
      * @see Backbone.Model.initialize
      */
     initialize: function() {
-        this.field = new CellsCollection();
+        this.field = new CellsCollection(null, {
+            height: this.get('height'),
+            width: this.get('width')
+        });
         this.fillCellsCollection();
     },
 
@@ -49,9 +54,8 @@ var AppModel = Backbone.Model.extend({
 
             if (this.field.at(randomNumber).get('isMine')){
                 m--;
-            }
-            else {
-                this.field.at(randomNumber).set({'isMine': true});
+            } else {
+                this.field.at(randomNumber).set('isMine', true);
             }
         }
 
@@ -81,8 +85,12 @@ var AppModel = Backbone.Model.extend({
                             }
                         }
                     }
+                    this.field.at(i * width + j).set('minesAround', countMines);
+                }
 
-                    this.field.at(i * width + j).set({'minesAround': countMines});
+                // Check, is empty current cell
+                if (!this.field.at(i*width + j).get('minesAround') && !this.field.at(i*width + j).get('isMine')) {
+                    this.field.at(i*width + j).set('isEmpty', true);
                 }
             }
         }

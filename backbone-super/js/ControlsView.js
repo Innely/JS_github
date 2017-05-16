@@ -12,8 +12,8 @@ var ControlsView = Backbone.View.extend({
         'click #resetButton': '_onResetClick'
     },
 
-    initialize: function(arg) {
-        this.openedCells = arg.openedCells;
+    initialize: function() {
+        this.listenTo(this.model, 'change:openedCount', this.render);
     },
 
     /**
@@ -22,9 +22,8 @@ var ControlsView = Backbone.View.extend({
      */
     render: function() {
         this.$el.html(tpl.render('Controls', {
-             openedCount: this.openedCells
+            openedCount: this.model.get('openedCount')
         }));
-
         return this;
     },
 
@@ -33,7 +32,19 @@ var ControlsView = Backbone.View.extend({
      * @protected
      */
     _onResetClick: function() {
-        window.location.reload();
+        var resetCounter;
+        resetCounter = this.model.get('resetGameCounter') + 1;
+        this.model.set({
+            'openedCount': 0,
+            'isGameFailModel': false,
+            'resetGameCounter': resetCounter
+        });
+
+        this.model.field.reset();
+        this.model.fillCellsCollection();
+
+        //app.initialize();
+        //window.location.reload();
     }
 
 });

@@ -6,10 +6,6 @@
 
 var AppView = Backbone.View.extend({
 
-    events: {
-        'click #field': 'checkOpenCells'
-    },
-
     /**
      * @see Region
      */
@@ -23,8 +19,10 @@ var AppView = Backbone.View.extend({
      * @see Backbone.View.initialize
      */
     initialize: function() {
+        this.listenTo(this.model, 'change:isGameFailModel', this.gameFail);
         this.listenTo(this.model.field, 'change:isOpen', this.updateCounter);
-        this.listenTo(this.model.field, 'change:isOpen', this.checkOpenCells);
+
+        this.listenTo(this.model, 'change:resetGameCounter', this.render);
     },
 
     /**
@@ -41,13 +39,28 @@ var AppView = Backbone.View.extend({
                 return {model: model};
             }
         );
-        console.log(this.model.field);
 
         this.regions.controls.render(ControlsView, {
-            openedCells: this.model.get('openedCount')
+            model: this.model
         });
 
         return this;
+    },
+
+    gameFail: function () {
+        if (this.model.get('isGameFailModel')) {
+            this.stopListening(this.model.field, 'change:isOpen');
+
+            // Set 'isOpen' for all cell's with mine, stop the game
+            this.model.field.forEach(function(model){
+                model.set('isGameFail', true);
+
+                if (model.get('isMine')){
+                    model.set('isOpen', true);
+                }
+            });
+            setTimeout("alert('Вы проиграли...')", 50);
+        }
     },
 
     /**
@@ -63,14 +76,7 @@ var AppView = Backbone.View.extend({
                 openedCells += model.get('isOpen');
             }
         });
-        this.model.set({'openedCount': openedCells});
-
-
-        // TODO можно ли так делать? или нужно выносить отдельно?
-        // Update Controls template
-        this.regions.controls.render(ControlsView, {
-            openedCells: this.model.get('openedCount')
-        });
+        this.model.set('openedCount', openedCells);
 
         // Check, has cliked cell the mine?
         this.model.field.forEach(function(model){
@@ -78,75 +84,18 @@ var AppView = Backbone.View.extend({
                 minedCell = true;
             }
         });
-
-        // Set 'isOpen' for all cell's with mine, stop the game
-        this.model.field.forEach(function(model){
-            if (minedCell && model.get('isMine')){
-                model.set({'isOpen': true});
-            }
-            // Stop to click and stop update counter
-            if (minedCell) {
-                model.set({'notToClick': true});
-            }
-        });
+        if (minedCell) {
+            this.model.set('isGameFailModel', true);
+        }
 
         // Set 'isOpen' for all cell's models, Happy-end the game
-        if (openedCells == this.model.get('width') * this.model.get('height') - this.model.get('mines') && !minedCell) {
+        if (openedCells == this.model.get('width') * this.model.get('height') - this.model.get('mines')) {
+            this.stopListening(this.model.field, 'change:isOpen');
             this.model.field.forEach(function(model){
-                model.set({'isOpen': true});
+                model.set('isOpen', true);
             });
             setTimeout("alert('Ура, вы выиграли!!!')", 50);
         }
-
-        // Check, is empty current cell?
-        this.model.field.forEach(function(model){
-            if (!model.get('minesAround') && !model.get('isMine')) {
-                model.set({'isEmpty': true});
-            }
-        });
     },
-
-    /**
-     * Check all opening cells
-     * @protected
-     */
-    checkOpenCells: function() {
-        var a, b;
-
-        this.model.field.forEach(function(model){
-            if (model.get('isEmpty') && model.get('isOpen')) {
-                a =  model.get('x');
-                b =  model.get('y');
-                this.openSibling(a, b);
-            }
-        }.bind(this));
-    },
-
-    /**
-     * Open sibling cells
-     * @param x, y - coordinates of the empty clicked cell
-     */
-    openSibling: function(x, y) {
-        var currentCell;
-        var width = this.model.get('width');
-        var height = this.model.get('height');
-
-        // Check, Are we on the border?
-        var start = {
-            x: (x - 1 > -1) ? x - 1 : x,
-            y: (y - 1 > -1) ? y - 1 : y
-        };
-        var end = {
-            x: (x + 1 >= width) ? x : x + 1,
-            y: (y + 1 >= height) ? y : y + 1
-        };
-
-        for (var i = start.x; i <= end.x; i++) {
-            for (var j = start.y; j <= end.y; j++) {
-                currentCell = this.model.field.models[i*width + j];
-                currentCell.set({'isOpen': true});
-            }
-        }
-    }
 
 });
