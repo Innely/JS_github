@@ -31,7 +31,7 @@ _.extend(App.prototype, Backbone.Events, {
 window.app = new Backbone.App({
 
     regions: {
-        app: '#app'
+        app: '#app',
     },
 
     ready: function() {

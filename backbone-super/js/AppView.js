@@ -22,7 +22,7 @@ var AppView = Backbone.View.extend({
         this.listenTo(this.model, 'change:isGameFailModel', this.gameFail);
         this.listenTo(this.model.field, 'change:isOpen', this.updateCounter);
 
-        this.listenTo(this.model, 'change:resetGameCounter', this.render);
+        this.listenTo(this.model, 'change:resetGameCounter', this.updateView);
     },
 
     /**
@@ -45,6 +45,11 @@ var AppView = Backbone.View.extend({
         });
 
         return this;
+    },
+
+    updateView: function () {
+        this.render();
+        this.listenTo(this.model.field, 'change:isOpen', this.updateCounter);
     },
 
     gameFail: function () {

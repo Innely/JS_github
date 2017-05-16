@@ -32,6 +32,9 @@ var ControlsView = Backbone.View.extend({
      * @protected
      */
     _onResetClick: function() {
+        this.model.field.reset();
+        this.model.fillCellsCollection();
+
         var resetCounter;
         resetCounter = this.model.get('resetGameCounter') + 1;
         this.model.set({
@@ -39,12 +42,6 @@ var ControlsView = Backbone.View.extend({
             'isGameFailModel': false,
             'resetGameCounter': resetCounter
         });
-
-        this.model.field.reset();
-        this.model.fillCellsCollection();
-
-        //app.initialize();
-        //window.location.reload();
     }
 
 });
