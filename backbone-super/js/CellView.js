@@ -28,7 +28,7 @@ var CellView = Backbone.View.extend({
      * @see Backbone.View.initialize
      */
     initialize: function() {
-        this.listenTo(this.model, 'change:isOpen', this.onOpenChange);
+        this.listenTo(this.model, 'change:isOpen', this.toggleOpen);
     },
 
     /**
@@ -47,9 +47,9 @@ var CellView = Backbone.View.extend({
      * @protected
      */
     onClick: function () {
-        if (!this.model.get('isGameFail')) {
+        if (!this.model.app.get('isGameFail')) {
             this.model.set('isOpen', true);
-            this.$el.toggleClass(this.CSS_OPEN_CLASS, this.model.get('isOpen'));
+            this.toggleOpen();
         }
     },
 
@@ -57,7 +57,7 @@ var CellView = Backbone.View.extend({
      * Open cells for happy end (all cells)
      * @protected
      */
-    onOpenChange: function () {
+    toggleOpen: function () {
         this.$el.toggleClass(this.CSS_OPEN_CLASS, this.model.get('isOpen'));
     }
 

@@ -11,8 +11,18 @@ var CellsCollection = Backbone.Collection.extend({
     initialize: function(models, options) {
         this.height = options && options.height;
         this.width = options && options.width;
+        this.app = options && options.app;
 
         this.on('change:isOpen', this.checkOpenCells);
+        this.on('add', this.onAdd);
+    },
+
+    /**
+     * Need to attach parent model to each child model
+     * @param {Object} model
+     */
+    onAdd: function (model) {
+        model.app = this.app;
     },
 
     /**

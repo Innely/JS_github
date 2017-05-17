@@ -19,10 +19,8 @@ var AppView = Backbone.View.extend({
      * @see Backbone.View.initialize
      */
     initialize: function() {
-        this.listenTo(this.model, 'change:isGameFailModel', this.gameFail);
         this.listenTo(this.model.field, 'change:isOpen', this.updateCounter);
-
-        this.listenTo(this.model, 'change:resetGameCounter', this.updateView);
+        this.listenTo(this.model, 'change:isGameFail', this.checkGameState);
     },
 
     /**
@@ -47,25 +45,36 @@ var AppView = Backbone.View.extend({
         return this;
     },
 
-    updateView: function () {
+    /**
+     * Check the state of the game
+     * @public
+     */
+    checkGameState: function() {
+        if (this.model.get('isGameFail')) {
+            this.fail();
+            return;
+        }
+
+        if (this.model.get('isGameFail') !== 0) {
+            this.restart();
+        }
+    },
+
+    restart: function () {
         this.render();
         this.listenTo(this.model.field, 'change:isOpen', this.updateCounter);
     },
 
-    gameFail: function () {
-        if (this.model.get('isGameFailModel')) {
-            this.stopListening(this.model.field, 'change:isOpen');
+    fail: function () {
+        this.stopListening(this.model.field, 'change:isOpen');
 
-            // Set 'isOpen' for all cell's with mine, stop the game
-            this.model.field.forEach(function(model){
-                model.set('isGameFail', true);
-
-                if (model.get('isMine')){
-                    model.set('isOpen', true);
-                }
-            });
-            setTimeout("alert('Вы проиграли...')", 50);
-        }
+        // Set 'isOpen' for all cell's with mine, stop the game
+        this.model.field.forEach(function(model){
+            if (model.get('isMine')){
+                model.set('isOpen', true);
+            }
+        });
+        setTimeout("alert('Вы проиграли...')", 50);
     },
 
     /**
@@ -90,7 +99,7 @@ var AppView = Backbone.View.extend({
             }
         });
         if (minedCell) {
-            this.model.set('isGameFailModel', true);
+            this.model.set('isGameFail', true);
         }
 
         // Set 'isOpen' for all cell's models, Happy-end the game
@@ -99,6 +108,7 @@ var AppView = Backbone.View.extend({
             this.model.field.forEach(function(model){
                 model.set('isOpen', true);
             });
+            this.model.set('isGameFail', 0);
             setTimeout("alert('Ура, вы выиграли!!!')", 50);
         }
     },

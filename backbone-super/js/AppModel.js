@@ -11,8 +11,7 @@ var AppModel = Backbone.Model.extend({
         height: 5,
         mines: 8,
         openedCount: 0,
-        isGameFailModel: false,
-        resetGameCounter: 0
+        isGameFail: 0
     },
 
     /**
@@ -21,7 +20,8 @@ var AppModel = Backbone.Model.extend({
     initialize: function() {
         this.field = new CellsCollection(null, {
             height: this.get('height'),
-            width: this.get('width')
+            width: this.get('width'),
+            app: this
         });
         this.fillCellsCollection();
     },
